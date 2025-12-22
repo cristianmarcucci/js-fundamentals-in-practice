@@ -1,5 +1,6 @@
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
+const taskList = document.getElementById("taskList");
 
 const tasks = [];
 
@@ -14,15 +15,25 @@ function addTask(title) {
     return task;
 }
 
+function renderTasks() {
+    taskList.innerHTML = "";
+
+    for (const task of tasks) {
+        const li = document.createElement("li");
+        li.textContent = task.title;
+
+        taskList.appendChild(li);
+    }
+}
+
 addTaskBtn.addEventListener('click', function(){
     const taskTitle = taskInput.value;
 
-    if (taskTitle === ""){
-        return;
-    }
+    if (!taskTitle.trim()) return;
 
     addTask(taskTitle);
-    console.log(tasks);
+    renderTasks();
+
     taskInput.value = "";
 })
 
