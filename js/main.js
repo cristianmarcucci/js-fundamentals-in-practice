@@ -1,3 +1,6 @@
+const taskInput = document.getElementById("taskInput");
+const addTaskBtn = document.getElementById("addTaskBtn");
+
 const tasks = [];
 
 function addTask(title) {
@@ -7,11 +10,20 @@ function addTask(title) {
         complete: false,
     }
 
-    tasks.push(task)
+    tasks.push(task);
+    return task;
 }
 
-addTask("Study JavaScript");
-addTask("Practice Git");
-addTask("Build projects");
+addTaskBtn.addEventListener('click', function(){
+    const taskTitle = taskInput.value;
 
-console.log(tasks);
+    if (taskTitle === ""){
+        return;
+    }
+
+    addTask(taskTitle);
+    console.log(tasks);
+    taskInput.value = "";
+})
+
+
