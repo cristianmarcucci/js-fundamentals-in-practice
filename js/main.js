@@ -5,7 +5,7 @@ const taskListEl = document.getElementById("taskList");
 
 //State
 let currentFilter = localStorage.getItem("filter") || "all";
-const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -14,23 +14,27 @@ function saveTasks() {
 function addTask(title) {
     const task = {
         id: Date.now(),
-        title: title,
+        title,
         completed: false,
     }
 
-    tasks.push(task);
-    return task;
+    tasks = [...tasks, task];
 }
 
 function deleteTask(taskId) {
-    const index = tasks.findIndex(task => task.id === taskId);
-
-    if(index === -1) return;
-
-    tasks.splice(index, 1);
+    tasks = tasks.filter(task => task.id !== taskId);
     saveTasks();
     renderTasks(getFilteredTasks());
 }
+
+function toggleTask(taskId) {
+            tasks = tasks.map(task => 
+                task.id === taskId
+                ? {...task, completed: !task.completed}
+                : task
+            );
+            saveTasks();
+        }
 
 function getAllTasks(){
     return tasks;
@@ -78,8 +82,7 @@ function renderTasks(taskArray = tasks) {
         });
 
         li.addEventListener("click", function(){
-            task.completed = !task.completed;
-            saveTasks();
+            toggleTask(task.id)
             renderTasks(getFilteredTasks());
         });
 
