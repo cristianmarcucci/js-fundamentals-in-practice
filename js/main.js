@@ -1,8 +1,10 @@
+//DOM elements
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskListEl = document.getElementById("taskList");
-let currentFilter = localStorage.getItem("filter") || "all";
 
+//State
+let currentFilter = localStorage.getItem("filter") || "all";
 const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 function saveTasks() {
@@ -18,6 +20,41 @@ function addTask(title) {
 
     tasks.push(task);
     return task;
+}
+
+function deleteTask(taskId) {
+    const index = tasks.findIndex(task => task.id === taskId);
+
+    if(index === -1) return;
+
+    tasks.splice(index, 1);
+    saveTasks();
+    renderTasks(getFilteredTasks());
+}
+
+function getAllTasks(){
+    return tasks;
+}
+
+function getActiveTasks(){
+    return tasks.filter(task => !task.completed)
+}
+
+function getCompletedTasks(){
+    return tasks.filter(task => task.completed)
+}
+
+function getFilteredTasks(){
+
+    if(currentFilter === "active"){
+        return getActiveTasks();
+    }
+
+    if(currentFilter === "completed"){
+        return getCompletedTasks();
+    }
+
+    return getAllTasks();
 }
 
 function renderTasks(taskArray = tasks) {
@@ -51,16 +88,6 @@ function renderTasks(taskArray = tasks) {
     }
 }
 
-function deleteTask(taskId) {
-    const index = tasks.findIndex(task => task.id === taskId);
-
-    if(index === -1) return;
-
-    tasks.splice(index, 1);
-    saveTasks();
-    renderTasks(getFilteredTasks());
-}
-
 addTaskBtn.addEventListener('click', function(){
     const taskTitle = taskInput.value;
 
@@ -83,31 +110,6 @@ taskInput.addEventListener("keydown", function(event) {
 taskInput.addEventListener("input", function() {
     addTaskBtn.disabled = !taskInput.value.trim();
 })
-
-function getFilteredTasks(){
-
-    if(currentFilter === "active"){
-        return getActiveTasks();
-    }
-
-    if(currentFilter === "completed"){
-        return getCompletedTasks();
-    }
-
-    return getAllTasks();
-}
-
-function getAllTasks(){
-    return tasks;
-}
-
-function getActiveTasks(){
-    return tasks.filter(task => !task.completed)
-}
-
-function getCompletedTasks(){
-    return tasks.filter(task => task.completed)
-}
 
 document.getElementById("filter-all").addEventListener("click", () => {
     currentFilter = "all";
