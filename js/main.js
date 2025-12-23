@@ -1,6 +1,6 @@
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
-const taskList = document.getElementById("taskList");
+const taskListEl = document.getElementById("taskList");
 
 const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -12,21 +12,21 @@ function addTask(title) {
     const task = {
         id: Date.now(),
         title: title,
-        complete: false,
+        completed: false,
     }
 
     tasks.push(task);
     return task;
 }
 
-function renderTasks() {
-    taskList.innerHTML = "";
+function renderTasks(taskArray = tasks) {
+    taskListEl.innerHTML = "";
 
-    for (const task of tasks) {
+    for (const task of taskArray) {
         const li = document.createElement("li");
         li.textContent = task.title;
 
-        if(task.complete){
+        if(task.completed){
             li.style.textDecoration = "line-through";
         }
 
@@ -40,13 +40,13 @@ function renderTasks() {
         });
 
         li.addEventListener("click", function(){
-            task.complete = !task.complete;
+            task.completed = !task.completed;
             saveTasks();
             renderTasks();
         });
 
         li.appendChild(deleteBtn);
-        taskList.appendChild(li);
+        taskListEl.appendChild(li);
     }
 }
 
@@ -71,6 +71,30 @@ addTaskBtn.addEventListener('click', function(){
 
     taskInput.value = "";
 })
+
+function getAllTasks(){
+    return tasks;
+}
+
+function getActiveTasks(){
+    return tasks.filter(task => !task.completed)
+}
+
+function getCompletedTasks(){
+    return tasks.filter(task => task.completed)
+}
+
+document.getElementById("filter-all").addEventListener("click", () => {
+    renderTasks(getAllTasks());
+});
+
+document.getElementById("filter-active").addEventListener("click", () => {
+    renderTasks(getActiveTasks());
+});
+
+document.getElementById("filter-completed").addEventListener("click", () => {
+    renderTasks(getCompletedTasks());
+});
 
 renderTasks();
 
