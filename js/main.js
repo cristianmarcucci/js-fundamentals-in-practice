@@ -1,6 +1,7 @@
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskListEl = document.getElementById("taskList");
+let currentFilter = localStorage.getItem("filter") || "all";
 
 const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -42,7 +43,7 @@ function renderTasks(taskArray = tasks) {
         li.addEventListener("click", function(){
             task.completed = !task.completed;
             saveTasks();
-            renderTasks();
+            renderTasks(getFilteredTasks());
         });
 
         li.appendChild(deleteBtn);
@@ -57,7 +58,7 @@ function deleteTask(taskId) {
 
     tasks.splice(index, 1);
     saveTasks();
-    renderTasks();
+    renderTasks(getFilteredTasks());
 }
 
 addTaskBtn.addEventListener('click', function(){
@@ -67,10 +68,23 @@ addTaskBtn.addEventListener('click', function(){
 
     addTask(taskTitle);
     saveTasks();
-    renderTasks();
+    renderTasks(getFilteredTasks());
 
     taskInput.value = "";
 })
+
+function getFilteredTasks(){
+
+    if(currentFilter === "active"){
+        return getActiveTasks();
+    }
+
+    if(currentFilter === "completed"){
+        return getCompletedTasks();
+    }
+
+    return getAllTasks();
+}
 
 function getAllTasks(){
     return tasks;
@@ -85,16 +99,22 @@ function getCompletedTasks(){
 }
 
 document.getElementById("filter-all").addEventListener("click", () => {
-    renderTasks(getAllTasks());
+    currentFilter = "all";
+    localStorage.setItem("filter", currentFilter);
+    renderTasks(getFilteredTasks());
 });
 
 document.getElementById("filter-active").addEventListener("click", () => {
-    renderTasks(getActiveTasks());
+    currentFilter = "active";
+    localStorage.setItem("filter", currentFilter);
+    renderTasks(getFilteredTasks());
 });
 
 document.getElementById("filter-completed").addEventListener("click", () => {
-    renderTasks(getCompletedTasks());
+    currentFilter = "completed";
+    localStorage.setItem("filter", currentFilter);
+    renderTasks(getFilteredTasks());
 });
 
-renderTasks();
+renderTasks(getFilteredTasks());
 
