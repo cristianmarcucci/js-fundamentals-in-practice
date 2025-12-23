@@ -71,6 +71,17 @@ addTaskBtn.addEventListener('click', function(){
     renderTasks(getFilteredTasks());
 
     taskInput.value = "";
+    taskInput.focus();
+})
+
+taskInput.addEventListener("keydown", function(event) {
+    if(event.key === "Enter"){
+        addTaskBtn.click();
+    }
+})
+
+taskInput.addEventListener("input", function() {
+    addTaskBtn.disabled = !taskInput.value.trim();
 })
 
 function getFilteredTasks(){
