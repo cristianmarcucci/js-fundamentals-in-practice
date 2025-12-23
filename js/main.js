@@ -3,6 +3,7 @@ const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskListEl = document.getElementById("taskList");
 const taskCounterEl = document.getElementById("taskCounter");
+const clearCompletBtn = document.getElementById("clearCompletedBtn");
 
 //State
 let currentFilter = localStorage.getItem("filter") || "all";
@@ -96,6 +97,16 @@ function renderTasks(taskArray = tasks) {
 function updateTaskCounter() {
     const activeTasks = getActiveTasks().length;
     taskCounterEl.textContent = `${activeTasks} task${activeTasks !== 1 ? "s" :""} left`;
+    clearCompletedBtn.style.display = tasks.some(task => task.completed) ? "inline-block" : "none";
+}
+
+function clearCompletedTasks() {
+    const hasCompeted = tasks.some(task => task.completed);
+    if (!hasCompeted) return;
+
+    tasks = tasks.filter(task => !task.completed);
+    saveTasks();
+    renderTasks(getFilteredTasks());
 }
 
 addTaskBtn.addEventListener('click', function(){
@@ -138,6 +149,8 @@ document.getElementById("filter-completed").addEventListener("click", () => {
     localStorage.setItem("filter", currentFilter);
     renderTasks(getFilteredTasks());
 });
+
+clearCompletBtn.addEventListener("click", clearCompletedTasks);
 
 renderTasks(getFilteredTasks());
 
