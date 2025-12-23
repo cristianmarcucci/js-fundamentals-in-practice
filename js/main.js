@@ -22,6 +22,15 @@ function renderTasks() {
         const li = document.createElement("li");
         li.textContent = task.title;
 
+        if(task.complete){
+            li.style.textDecoration = "line-through";
+        }
+
+        li.addEventListener("click", function(){
+            task.complete = !task.complete;
+            renderTasks();
+        })
+
         taskList.appendChild(li);
     }
 }
