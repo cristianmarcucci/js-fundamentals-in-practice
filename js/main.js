@@ -2,7 +2,11 @@ const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
 
-const tasks = [];
+const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
 function addTask(title) {
     const task = {
@@ -28,6 +32,7 @@ function renderTasks() {
 
         li.addEventListener("click", function(){
             task.complete = !task.complete;
+            saveTasks();
             renderTasks();
         })
 
@@ -41,9 +46,11 @@ addTaskBtn.addEventListener('click', function(){
     if (!taskTitle.trim()) return;
 
     addTask(taskTitle);
+    saveTasks();
     renderTasks();
 
     taskInput.value = "";
 })
 
+renderTasks();
 
