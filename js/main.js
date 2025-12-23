@@ -2,6 +2,7 @@
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskListEl = document.getElementById("taskList");
+const taskCounterEl = document.getElementById("taskCounter");
 
 //State
 let currentFilter = localStorage.getItem("filter") || "all";
@@ -88,7 +89,13 @@ function renderTasks(taskArray = tasks) {
 
         li.appendChild(deleteBtn);
         taskListEl.appendChild(li);
+        updateTaskCounter();
     }
+}
+
+function updateTaskCounter() {
+    const activeTasks = getActiveTasks().length;
+    taskCounterEl.textContent = `${activeTasks} task${activeTasks !== 1 ? "s" :""} left`;
 }
 
 addTaskBtn.addEventListener('click', function(){
