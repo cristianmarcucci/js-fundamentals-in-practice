@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JS Fundamentals in Practice</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1>My tasks</h1>
+    <title>Task App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 40px auto;
+        }
 
-    <input
-      type="text"
-      id="taskInput"
-      placeholder="Type a task"
-      aria-label="Task title"
-    />
-    <button id="addTaskBtn" disabled>Add Task</button>
+        ul {
+            padding: 0;
+        }
 
-    <ul id="taskList"></ul>
+        li {
+            list-style: none;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        button {
+            margin-left: 6px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tasks</h1>
+
+    <input id="taskInput" type="text" placeholder="New task" />
+    <button id="addTaskBtn" disabled>Add</button>
 
     <p id="taskCounter"></p>
 
-    <button id="filter-all">All</button>
-    <button id="filter-active">Active</button>
-    <button id="filter-completed">Completed</button>
-    <button id="clearCompletedBtn">Clear completed</button>
+    <div>
+        <button id="filter-all">All</button>
+        <button id="filter-active">Active</button>
+        <button id="filter-completed">Completed</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <button id="clearCompletedBtn" style="display:none;">Clear completed</button>
+    <button id="undoBtn" style="display:none;">Undo</button>
 
     <script src="js/main.js"></script>
-  </body>
+    <script src="js/playground.js"></script>
+</body>
 </html>
