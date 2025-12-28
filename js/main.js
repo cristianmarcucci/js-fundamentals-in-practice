@@ -7,9 +7,10 @@ const clearCompletedBtn = document.getElementById("clearCompletedBtn");
 const undoBtn = document.getElementById("undoBtn");
 
 // State
-let tasks = [];
+let tasks = loadTasks();
 let history = [];
 let currentFilter = "all";
+let isLoading = false;
 
 // ---------- Helpers ----------
 
@@ -21,9 +22,23 @@ function updateAddButtonState() {
     addTaskBtn.disabled = !taskInput.value.trim();
 }
 
+function setLoading(value) {
+    isLoading = value;
+    addTaskBtn.disabled = value;
+}
+
 // ---------- State mutations ----------
 
-function addTask(title) {
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadTasks() {
+  const stored = localStorage.getItem("tasks");
+  return stored ? JSON.parse(stored) : [];
+}
+
+/*function addTask(title) {
     saveToHistory();
 
     tasks = [
@@ -36,13 +51,55 @@ function addTask(title) {
     ];
 
     render();
+}*/
+
+import { apiAddTask, apiDeleteTask } from "../api/taskService.js";
+
+async function handleAddTask(title) {
+    try{
+        setLoading(true);
+
+        const newTask = {
+            id: Date.now(),
+            title,
+            completed: false,
+        };
+
+        await apiAddTask(newTask);
+
+        tasks = [...tasks, newTask];
+        saveTasks();
+        render();
+    } catch(error){
+        alert(error.message);
+    } finally {
+        setLoading(false);
+    }
 }
 
-function deleteTask(id) {
+async function handleDeletedTask(taskId) {
+    try{
+        setLoading(true);
+        saveToHistory();
+
+        await apiDeleteTask(taskId);
+
+        tasks = tasks.filter(task => task.id !== taskId);
+        saveTasks();
+        render();
+    } catch {
+        alert(error.message);
+    } finally {
+        setLoading(false);
+    }
+}
+
+/*function deleteTask(id) {
     saveToHistory();
     tasks = tasks.filter(task => task.id !== id);
+    saveTasks();
     render();
-}
+}*/
 
 function toggleTask(id) {
     saveToHistory();
@@ -51,6 +108,7 @@ function toggleTask(id) {
             ? { ...task, completed: !task.completed }
             : task
     );
+    saveTasks();
     render();
 }
 
@@ -65,6 +123,7 @@ function clearCompleted() {
 function undo() {
     if (!history.length) return;
     tasks = history.pop();
+    saveTasks();
     render();
 }
 
@@ -99,7 +158,7 @@ function render() {
         delBtn.textContent = "❌";
         delBtn.addEventListener("click", e => {
             e.stopPropagation();
-            deleteTask(task.id);
+             handleDeletedTask(task.id);
         });
 
         li.appendChild(delBtn);
@@ -132,7 +191,7 @@ addTaskBtn.addEventListener("click", () => {
     const value = taskInput.value.trim();
     if (!value) return;
 
-    addTask(value);
+    handleAddTask(value);
     taskInput.value = "";
     taskInput.focus();
 });

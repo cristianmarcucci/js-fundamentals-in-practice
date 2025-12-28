@@ -1,23 +1,52 @@
-let tasks = [
+let activities = [
   { id: 1, title: "Learn JS", completed: false },
   { id: 2, title: "Build app", completed: true },
   { id: 3, title: "Get hired", completed: false }
 ];
 
-const toggled = tasks.map(tasks => 
-    tasks.id === 1
-    ? {...tasks, completed: !tasks.completed}
-    : tasks
+const toggled = activities.map(activities => 
+    activities.id === 1
+    ? {...activities, completed: !activities.completed}
+    : activities
 );
 
-console.log("Original", tasks);
+console.log("Original", activities);
 console.log("Toggled", toggled);
 
-const removed = tasks.filter(tasks => tasks.id !== 2);
+const removed = activities.filter(activities => activities.id !== 2);
 console.log("Removed", removed);
 
-console.log("Has completed?", tasks.some(tasks => tasks.completed));
-console.log("All completed?", tasks.every(t => t.completed));
+console.log("Has completed?", activities.some(activities => activities.completed));
+console.log("All completed?", activities.every(t => t.completed));
 
-const activeCount = tasks.filter(t => !t.completed).length;
+const activeCount = activities.filter(t => !t.completed).length;
 console.log(activeCount);
+
+function fakeSaveToServer(data) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (!data) {
+        reject("No data received");
+      } else {
+        resolve("Saved successfully");
+      }
+    }, 2000);
+  });
+}
+
+fakeSaveToServer(activities)
+  .then(message => console.log(message))
+  .catch(error => console.error(error));
+
+async function saveTasksAsync() {
+  try {
+    const message = await fakeSaveToServer(activities);
+    console.log(message);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+saveTasksAsync();
+
+
