@@ -7,10 +7,11 @@ const clearCompletedBtn = document.getElementById("clearCompletedBtn");
 const undoBtn = document.getElementById("undoBtn");
 
 // State
-let tasks = loadTasks();
+let tasks = [];
 let history = [];
 let currentFilter = "all";
 let isLoading = false;
+let errorMessage = "";
 
 // ---------- Helpers ----------
 
@@ -27,6 +28,34 @@ function setLoading(value) {
     addTaskBtn.disabled = value;
 }
 
+function fakeApiFetchTasks(){
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const shouldFail = Math.random() < 0.2;
+
+            if(shouldFail){
+                reject(new Error("Failed to fetch tasks from server"))
+            } else{
+                resolve(loadTasks());
+            }
+        }, 1000);
+    });
+}
+
+function fakeApiSaveTasks(tasks) {
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+            const shouldFail= Math.random() < 0.2;
+
+            if(shouldFail){
+                reject(new Error("Failed to save tasks to server"));
+            } else{
+                resolve({success:true});
+            }
+        }, 800);
+    });
+}
+
 // ---------- State mutations ----------
 
 function saveTasks() {
@@ -38,7 +67,7 @@ function loadTasks() {
   return stored ? JSON.parse(stored) : [];
 }
 
-/*function addTask(title) {
+function addTask(title) {
     saveToHistory();
 
     tasks = [
@@ -50,10 +79,23 @@ function loadTasks() {
         }
     ];
 
+    saveTasks();
     render();
-}*/
 
-import { apiAddTask, apiDeleteTask } from "../api/taskService.js";
+    syncTasksWithServer();
+}
+
+function deleteTask(id) {
+    saveToHistory();
+
+    tasks = tasks.filter(t => t.id !== id);
+    saveTasks();
+    render();
+
+    syncTasksWithServer();
+}
+
+/*import { apiAddTask, apiDeleteTask } from "../api/taskService.js";
 
 async function handleAddTask(title) {
     try{
@@ -92,14 +134,32 @@ async function handleDeletedTask(taskId) {
     } finally {
         setLoading(false);
     }
+}*/
+
+async function initApp() {
+    isLoading = true;
+    errorMessage = "";
+    render();
+
+    try{
+        tasks = await fakeApiFetchTasks();
+    } catch (error){
+        errorMessage = error.message;
+    } finally {
+        isLoading = false;
+        render();
+    }
 }
 
-/*function deleteTask(id) {
-    saveToHistory();
-    tasks = tasks.filter(task => task.id !== id);
-    saveTasks();
-    render();
-}*/
+async function syncTasksWithServer() {
+    try{
+        await fakeApiSaveTasks(tasks);
+        console.log("Saved to server");
+    } catch(err){
+        alert(err.message);
+        undo();
+    }
+}
 
 function toggleTask(id) {
     saveToHistory();
@@ -110,6 +170,7 @@ function toggleTask(id) {
     );
     saveTasks();
     render();
+    syncTasksWithServer();
 }
 
 function clearCompleted() {
@@ -142,6 +203,17 @@ function getFilteredTasks() {
 }
 
 function render() {
+
+    if(isLoading){
+        taskListEl.innerHTML = "<li>Loading tasks...</li>";
+        return;
+    }
+
+    if(errorMessage){
+        taskListEl.innerHTML = `<li style="color: red">${errorMessage}</li>`;
+        return;
+    }
+
     taskListEl.innerHTML = "";
 
     for (const task of getFilteredTasks()) {
@@ -158,7 +230,7 @@ function render() {
         delBtn.textContent = "❌";
         delBtn.addEventListener("click", e => {
             e.stopPropagation();
-             handleDeletedTask(task.id);
+            deleteTask(task.id); //handleDeletedTask(task.id);
         });
 
         li.appendChild(delBtn);
@@ -191,7 +263,7 @@ addTaskBtn.addEventListener("click", () => {
     const value = taskInput.value.trim();
     if (!value) return;
 
-    handleAddTask(value);
+    addTask(value); //handleAddTask(value);
     taskInput.value = "";
     taskInput.focus();
 });
@@ -215,4 +287,4 @@ document.getElementById("filter-completed").onclick = () => {
 };
 
 // Initial render
-render();
+initApp();
