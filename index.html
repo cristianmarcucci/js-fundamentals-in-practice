@@ -1,37 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Task App</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: 40px auto;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 40px auto;
+      }
 
-        ul {
-            padding: 0;
-        }
+      ul {
+        padding: 0;
+      }
 
-        li {
-            list-style: none;
-            padding: 8px;
-            cursor: pointer;
-        }
+      li {
+        list-style: none;
+        padding: 8px;
+        cursor: pointer;
+      }
 
-        button {
-            margin-left: 6px;
-        }
+      button {
+        margin-left: 6px;
+      }
 
-        .completed {
-            text-decoration: line-through;
-            opacity: 0.6;
-        }
+      .completed {
+        text-decoration: line-through;
+        opacity: 0.6;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <h1>Tasks</h1>
 
     <input id="taskInput" type="text" placeholder="New task" />
@@ -40,16 +39,18 @@
     <p id="taskCounter"></p>
 
     <div>
-        <button id="filter-all">All</button>
-        <button id="filter-active">Active</button>
-        <button id="filter-completed">Completed</button>
+      <button id="filter-all">All</button>
+      <button id="filter-active">Active</button>
+      <button id="filter-completed">Completed</button>
     </div>
 
     <ul id="taskList"></ul>
 
-    <button id="clearCompletedBtn" style="display:none;">Clear completed</button>
-    <button id="undoBtn" style="display:none;">Undo</button>
+    <button id="clearCompletedBtn" style="display: none">
+      Clear completed
+    </button>
+    <button id="undoBtn" style="display: none">Undo</button>
 
-    <script type="module" src="js/main.js"></script>
-</body>
+    <script type="module" src="src/main.js"></script>
+  </body>
 </html>
