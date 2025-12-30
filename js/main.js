@@ -12,6 +12,10 @@ let history = [];
 let currentFilter = "all";
 let isLoading = false;
 let errorMessage = "";
+let uiState = {
+    loading: false,
+    error: null
+};
 
 // ---------- Helpers ----------
 
@@ -67,7 +71,7 @@ function loadTasks() {
   return stored ? JSON.parse(stored) : [];
 }
 
-function addTask(title) {
+async function addTask(title) {
     saveToHistory();
 
     tasks = [
@@ -79,10 +83,21 @@ function addTask(title) {
         }
     ];
 
-    saveTasks();
+    uiState.loading = true;
     render();
 
-    syncTasksWithServer();
+    //syncTasksWithServer();
+
+    try {
+        await fakeApiSaveTasks(tasks);
+        saveTasks();
+    } catch {
+        undo();
+        uiState.error = "Failed to save task";
+    } finally {
+        uiState.loading = false;
+        render();
+    }
 }
 
 function deleteTask(id) {
@@ -188,6 +203,12 @@ function undo() {
     render();
 }
 
+function updateControls() {
+    addTaskBtn.disabled = uiState.loading || !taskInput.value.trim();
+    clearCompletedBtn.disabled = uiState.loading;
+    undoBtn.disabled = uiState.loading;
+}
+
 // ---------- Rendering ----------
 
 function getFilteredTasks() {
@@ -204,7 +225,19 @@ function getFilteredTasks() {
 
 function render() {
 
-    if(isLoading){
+    taskListEl.innerHTML = "";
+
+    if(uiState.loading) {
+        taskListEl.innerHTML = "<li>Loading tasks...</li>";
+        return;
+    }
+
+    if(uiState.error) {
+        taskListEl.innerHTML = `<li style="color:red">❌ ${uiState.error}</li>`;
+        return;
+    }
+
+    /*if(isLoading){
         taskListEl.innerHTML = "<li>Loading tasks...</li>";
         return;
     }
@@ -212,9 +245,9 @@ function render() {
     if(errorMessage){
         taskListEl.innerHTML = `<li style="color: red">${errorMessage}</li>`;
         return;
-    }
+    }*/
 
-    taskListEl.innerHTML = "";
+    
 
     for (const task of getFilteredTasks()) {
         const li = document.createElement("li");
@@ -247,6 +280,7 @@ function render() {
         history.length ? "inline-block" : "none";
 
     updateAddButtonState();
+    updateControls();
 }
 
 // ---------- Events ----------
