@@ -33,6 +33,19 @@ export function render() {
         const li = document.createElement("li");
         li.textContent = task.title;
 
+        li.tabIndex = 0;
+
+        li.setAttribute("role", "checkbox");
+        li.setAttribute("aria-checked", task.completed);
+
+
+        li.addEventListener("keydown", e => {
+            if (e === "Enter" || e === " ") {
+                e.preventDefault();
+                toggleTask(task.id);
+            };
+        });
+
         li.addEventListener("click", () => 
             toggleTask(task.id)
         );
