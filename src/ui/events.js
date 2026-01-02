@@ -1,10 +1,11 @@
-import {addTask, clearCompletedTasks, undo,setFilter, toggleTask} from "../state/actions.js";
+import {addTask, clearCompletedTasks, undo, setFilter, toggleTask, deleteTask} from "../state/actions.js";
 import { store } from "../state/store.js";
 
 const taskInput = document.getElementById("taskInput");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const clearCompletedBtn = document.getElementById("clearCompletedBtn");
 const undoBtn = document.getElementById("undoBtn");
+const taskListEl = document.getElementById("taskList");
 
 function updateAddButtonState() {
     addTaskBtn.disabled = !taskInput.value.trim();
@@ -61,4 +62,28 @@ document.addEventListener("keydown", (e) => {
         e.preventDefault();
         undo();
     };
+});
+
+taskListEl.addEventListener("click", e => {
+    const li = e.target.closest("li");
+    if(!li) return;
+
+    const taskId = Number(li.dataset.id);
+
+    if (e.target.classList.contains("delete-btn")) {
+        deleteTask(taskId);
+        return;
+    }
+
+    toggleTask(taskId);
+});
+
+taskListEl.addEventListener("keydown", e => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+
+    const li = e.target.closest("li");
+    if (!li) return;
+
+    e.preventDefault();
+    toggleTask(Number(li.dataset.id));
 });
